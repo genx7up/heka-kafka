@@ -41,7 +41,9 @@ func (ao *KafkaOutput) Run(or OutputRunner, h PluginHelper) (err error) {
 
 	var pack *PipelinePack
 	var msg *message.Message
-
+	var topic string
+	var payload string
+	
 	ok := true
 	for ok {
 		select {
@@ -49,13 +51,19 @@ func (ao *KafkaOutput) Run(or OutputRunner, h PluginHelper) (err error) {
 			if !ok {
 				break
 			}
+
 			msg = pack.Message
-			err = ao.producer.QueueMessage(ao.config.Topic, nil, sarama.ByteEncoder(msg.GetPayload()))
+			payload = msg.GetPayload()
+			// topic = ao.config.Topic
+			topic = msg.GetType()
+			pack.Recycle()
+
+			err = ao.producer.QueueMessage(topic, nil, sarama.ByteEncoder(payload))
 			if err != nil {
-				pack.Recycle()
 				or.LogError(err)
-				break
 			}
+			break
+
 		case err = <-errChan:
 			break
 		}
