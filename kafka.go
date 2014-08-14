@@ -43,6 +43,7 @@ func (ao *KafkaOutput) Run(or OutputRunner, h PluginHelper) (err error) {
 	var msg *message.Message
 	var topic string
 	var payload string
+	var key string
 	
 	ok := true
 	for ok {
@@ -56,9 +57,10 @@ func (ao *KafkaOutput) Run(or OutputRunner, h PluginHelper) (err error) {
 			payload = msg.GetPayload()
 			// topic = ao.config.Topic
 			topic = msg.GetType()
+			key = ao.config.Id
 			pack.Recycle()
 
-			err = ao.producer.QueueMessage(topic, nil, sarama.ByteEncoder(payload))
+			err = ao.producer.QueueMessage(topic,  sarama.StringEncoder(key), sarama.ByteEncoder(payload))
 			if err != nil {
 				or.LogError(err)
 			}
@@ -84,6 +86,7 @@ func (ao *KafkaOutput) init() (err error) {
 		return
 	}
 	kconf := sarama.NewProducerConfig()
+	kconf.Partitioner = sarama.NewHashPartitioner()
 	ao.producer, err = sarama.NewProducer(ao.client, kconf)
 	if err != nil {
 		return
