@@ -111,3 +111,9 @@ func (ao *KafkaOutput) init() (err error) {
         }
         return
 }
+
+func init() {
+	RegisterPlugin("KafkaOutput", func() interface{} {
+		return new(KafkaOutput)
+	})
+}
