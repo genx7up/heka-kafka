@@ -14,6 +14,7 @@ import (
 type KafkaOutputConfig struct {
         Address string
         Id string
+        Cluster string
         Topic string
         CompressionCodec sarama.CompressionCodec
         MaxBufferTime time.Duration
@@ -64,6 +65,7 @@ func (ao *KafkaOutput) Run(or OutputRunner, h PluginHelper) (err error) {
                         
                         topic = msg.GetType()
                         key = ao.config.Id
+                        message.NewStringField(msg, "cluster", ao.config.Cluster)
                         
                         b, err := json.Marshal(msg)
                         if err != nil {
