@@ -1,4 +1,4 @@
-package kafka
+package gman_plugins
 
 import (
         "errors"
