@@ -56,7 +56,7 @@ func (f *MessageFilter) Run(runner pipeline.FilterRunner, helper pipeline.Plugin
                 if match {
                         output.InChan() <- pack
                 } else {
-                        pack.Recycle()
+                        pack.Recycle(nil)
                 }
         }
         return nil
